@@ -63,7 +63,7 @@ char **create_map(char **result, char *filename, int x, int y)
 	return (result);
 }
 
-void print_map(char **map, square_pos square)
+void print_map(char **map, square_pos square, int x)
 {
 	for (int y = square.y; square.y + square.size > y; y = y + 1) {
 		for (int x = square.x; square.x + square.size > x; x = x + 1) {
@@ -71,7 +71,8 @@ void print_map(char **map, square_pos square)
 		}
 	}
 	for (int i = 0; map[i] != NULL; i = i + 1, my_putchar('\n'))
-		my_putstr(map[i]);
+		write(1, map[i], x);
+		//my_putstr(map[i]);
 }
 
 square_pos find_square(char **map, int y, int x, int max_y)
@@ -134,7 +135,7 @@ void bsq(char **map, int max_x, int max_y)
 		}
 		c = 0;
 	}
-	print_map(map, final);
+	print_map(map, final, max_x);
 }
 
 int main(int argc, char *argv[])
