@@ -89,6 +89,7 @@ square_pos find_square(char **map, int y, int x, int max_y)
 			ctc += 1;
 		} else {
 			end = 0;
+			ctc += 1;
 		}
 	        while (ltc > tmp_y) {
 			if (tmp_y + y + 1 >= max_y)
