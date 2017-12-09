@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 	(void)argc;
 
 	result = create_map(result, argv[1], max_x, max_y);
-	bsq(result, max_x, max_y);
+	bsq(result, max_y, max_x);
 	free(result);
 	return (0);
 }
