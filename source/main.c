@@ -78,7 +78,7 @@ char **create_map(char **result, char *filename, int x, int y)
 		k += 1;
 		read(file, buffer, 1);
 	}
-	free(buffer);
+	free(buffer - j - 2);
 	return (result);
 }
 
