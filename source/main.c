@@ -141,7 +141,7 @@ void bsq(char **map, int max_x, int max_y)
 	square_pos t = {-2, -1, -1};
 	
 	for (int i = 0; i < max_y; i = i + 1) {
-		for (;c < max_x; c = c + 1) {
+		for (;c < max_x && final.size != max_y && final.size && max_x; c = c + 1) {
 			if (map[i][c] == '.') {
 				t = find_square(map, i, c, max_y);
 				if (t.size > final.size) {
