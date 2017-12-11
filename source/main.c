@@ -5,61 +5,80 @@
 ** Main file.
 */
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include "my.h"
 #include "main.h"
 
+int get_nbr_size(int nb)
+{
+	int i = 0;
+
+	while (nb > 9) {
+		i = i + 1;
+		nb /= 10;
+	}
+	return (i);
+}
+
 int get_line_nbr(char *filename)
 {
 	int file = open(filename, O_RDONLY);
-	char buffer[1];
-	char *str;
-	int i = 0;
+	char buffer[10];
 	int res;
 
-	while (read(file, buffer, 1) > 0 && buffer[0] != '\n')
-		i = i + 1;
-        str = malloc(i + 1);
-	close(file);
-	file = open(filename, O_RDONLY);
-	read(file, str, i);
-	res = my_getnbr(str);
-	free(str);
+	read(file, buffer, 10);
+	res = my_getnbr(buffer);
 	close(file);
 	return (res);
 }
 
-int get_colon_nbr(char *filename)
+int get_colon_nbr(char *filename, int max_y)
 {
 	int file = open(filename, O_RDONLY);
-	char buffer[1];
-	int i = 0;
+	struct stat sb;
+	long long size;
+	char *buffer;
+	int i = max_y + 2;
+	int z = 0;
 
-	while (read(file, buffer, 1) > 0 && buffer[0] != '\n');
-	while (read(file, buffer, 1) > 0 && buffer[0] != '\n')
-		i = i + 1;
+	stat(filename, &sb);
+	size = sb.st_size;
+	buffer = malloc(size);
+	read(file, buffer, size);
+	for (; buffer[i] != '\n'; z = z + 1, i = i + 1);
 	close(file);
-	return (i);
+	free(buffer);
+	return (z);
 }
 
 char **create_map(char **result, char *filename, int x, int y)
 {
 	int file = open(filename, O_RDONLY);
-	char buffer[1];
+	struct stat sb;
+	char *buffer;
 	int c = 0;
+	int j = get_nbr_size(x);
+	int k = 0;
 
-	while (read(file, buffer, 1) > 0 && buffer[0] != '\n');
+        stat(filename, &sb);
+	buffer = malloc(sb.st_size);
+	read(file, buffer, sb.st_size);
+	buffer = buffer + j + 2;
 	result = malloc(sizeof(char *) * x + 1);
 	for (int i = 0; i < x; i = i + 1, c = 0) {
 		result[i] = malloc(y + 1);
 		for (; c < y; c = c + 1) {
-			read(file, buffer, 1);
-			result[i][c] = buffer[0];
+			result[i][c] = buffer[k];
+			k += 1;
 		}
+		k += 1;
 		read(file, buffer, 1);
 	}
+	free(buffer);
 	return (result);
 }
 
@@ -72,7 +91,6 @@ void print_map(char **map, square_pos square, int x)
 	}
 	for (int i = 0; map[i] != NULL; i = i + 1, my_putchar('\n'))
 		write(1, map[i], x);
-		//my_putstr(map[i]);
 }
 
 square_pos find_square(char **map, int y, int x, int max_y)
@@ -142,7 +160,7 @@ int main(int argc, char *argv[])
 {
 	char **result = NULL;
 	int max_x = get_line_nbr(argv[1]);
-	int max_y = get_colon_nbr(argv[1]);
+	int max_y = get_colon_nbr(argv[1], get_nbr_size(max_x));
 	(void)argc;
 
 	result = create_map(result, argv[1], max_x, max_y);

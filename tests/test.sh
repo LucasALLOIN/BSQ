@@ -6,13 +6,14 @@ ls mouli_maps > gen_test
 
 for i in `seq 1 $count`; do
     t=$(sed "$i!d" gen_test)
+    echo -n "Test $t: " 
     ../bsq mouli_maps/$t > comp1
     diff=$(diff comp1 mouli_maps_solved/$t)
     if [ "$diff" == "" ]
     then
-	echo -e "Test $t: \e[32mOK\e[0m"
+	echo -e "\e[32mOK\e[0m"
     else
-	echo -e "Test $t: \e[31mFailed\e[0m"
+	echo -e "\e[31mFailed\e[0m"
     fi
 done
 rm gen_test
