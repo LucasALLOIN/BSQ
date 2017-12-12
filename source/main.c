@@ -13,145 +13,71 @@
 #include "my.h"
 #include "main.h"
 
-int get_nbr_size(int nb)
+void find_x(char **map, int *tab)
 {
-	int i = 0;
-
-	while (nb > 9) {
-		i = i + 1;
-		nb /= 10;
-	}
-	return (i);
-}
-
-int get_line_nbr(char *filename)
-{
-	int file = open(filename, O_RDONLY);
-	char buffer[10];
-	int res;
-
-	read(file, buffer, 10);
-	res = my_getnbr(buffer);
-	close(file);
-	return (res);
-}
-
-int get_colon_nbr(char *filename, int max_y)
-{
-	int file = open(filename, O_RDONLY);
-	struct stat sb;
-	long long size;
-	char *buffer;
-	int i = max_y + 2;
-	int z = 0;
-
-	stat(filename, &sb);
-	size = sb.st_size;
-	buffer = malloc(size);
-	read(file, buffer, size);
-	for (; buffer[i] != '\n'; z = z + 1, i = i + 1);
-	close(file);
-	free(buffer);
-	return (z);
-}
-
-char **create_map(char **result, char *filename, int x, int y)
-{
-	int file = open(filename, O_RDONLY);
-	struct stat sb;
-	char *buffer;
-	int c = 0;
-	int j = get_nbr_size(x);
-	int k = 0;
-
-        stat(filename, &sb);
-	buffer = malloc(sb.st_size);
-	read(file, buffer, sb.st_size);
-	buffer = buffer + j + 2;
-	result = malloc(sizeof(char *) * x + 1);
-	for (int i = 0; i < x; i = i + 1, c = 0) {
-		result[i] = malloc(y + 1);
-		for (; c < y; c = c + 1) {
-			result[i][c] = buffer[k];
-			k += 1;
+	if (tab[0] + tab[5] + 1 >= tab[7])
+		tab[4] = 0;
+	while (tab[3] > tab[1]) {
+		if (map[tab[5] + tab[0]][tab[6] + tab[1]] != '.') {
+			tab[4] = 0;
+			tab[3] = tab[3] - 1;
 		}
-		k += 1;
-		read(file, buffer, 1);
+		tab[1] += 1;
 	}
-	free(buffer - j - 2);
-	return (result);
-}
-
-void print_map(char **map, square_pos square, int x)
-{
-	for (int y = square.y; square.y + square.size > y; y = y + 1) {
-		for (int x = square.x; square.x + square.size > x; x = x + 1) {
-			map[y][x] = 'x';
-		}
-	}
-	for (int i = 0; map[i] != NULL; i = i + 1, my_putchar('\n'))
-		write(1, map[i], x);
+	tab[1] = 0;
+	tab[0] += 1;
 }
 
 square_pos find_square(char **map, int y, int x, int max_y)
 {
-	int tmp_y = 0;
-	int tmp_x = 0;
-	int ltc = 0;
-	int ctc = 0;
+	int tab[8] = {0, 0, 0, 0, 1, y, x , max_y};
 	square_pos taille = {-2, -1, -1};
-	int end = 1;
 
-        while (end) {
-		if (map[y][x + 1] == '.') {
-	        	ltc = ltc + 1;
-			ctc += 1;
+        for (;tab[4]; tab[0] = 0, tab[1] = 0) {
+		if (map[tab[5]][tab[6] + 1] == '.') {
+	        	tab[2] = tab[2] + 1;
+			tab[3] += 1;
 		} else {
-			end = 0;
-			ctc += 1;
+			tab[4] = 0;
+			tab[3] += 1;
 		}
-	        while (ltc > tmp_y) {
-			if (tmp_y + y + 1 >= max_y)
-				end = 0;
-			while (ctc > tmp_x) {
-				if (map[y + tmp_y][x + tmp_x] != '.') {
-					end = 0;
-					ctc = ctc - 1;
-				}
-				tmp_x += 1;
-			}
-		        tmp_x = 0;
-			tmp_y += 1;
+	        while (tab[2] > tab[0])
+			find_x(map, tab);
+		if (taille.size < tab[3]) {
+			taille.size = tab[3];
+			taille.x = tab[6];
+			taille.y = tab[5];
 		}
-		if (taille.size < ctc) {
-			taille.size = ctc;
-			taille.x = x;
-			taille.y = y;
-		}
-		tmp_y = 0;
-		tmp_x = 0;
         }
 	return (taille);
 }
 
+square_pos find_final(square_pos final, char **map, int *tab, int i)
+{
+	square_pos t = {-2, -1, -1};
+
+	if (map[i][tab[0]] == '.') {
+		t = find_square(map, i, tab[0], tab[2]);
+		if (t.size > final.size) {
+			final.size = t.size;
+			final.x = t.x;
+			final.y = t.y;
+		}
+	}
+	return (final);
+}
+
 void bsq(char **map, int max_x, int max_y)
 {
-        int c = 0;
+	int tab[3] = {0, max_x, max_y};
 	square_pos final = {-2, -1, -1};
-	square_pos t = {-2, -1, -1};
 	
-	for (int i = 0; i < max_y; i = i + 1) {
-		for (;c < max_x && final.size != max_y && final.size && max_x; c = c + 1) {
-			if (map[i][c] == '.') {
-				t = find_square(map, i, c, max_y);
-				if (t.size > final.size) {
-					final.size = t.size;
-					final.x = t.x;
-					final.y = t.y;
-				}
-		        }
+	for (int i = 0; i < tab[2]; i = i + 1) {
+		for (;tab[0] < tab[1] && final.size != tab[2] \
+			     && final.size && tab[1]; tab[0] += 1) {
+			final = find_final(final, map, tab, i);
 		}
-		c = 0;
+		tab[0] = 0;
 	}
 	print_map(map, final, max_x);
 }

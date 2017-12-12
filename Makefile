@@ -5,7 +5,8 @@
 ## Build bsq binary.
 ##
 
-SRC	=	source/main.c
+SRC	=	source/main.c \
+		source/bsq_utils.c
 
 OBJ	=	$(SRC:.c=.o)
 
