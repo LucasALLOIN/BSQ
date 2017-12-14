@@ -85,10 +85,13 @@ void bsq(char **map, int max_x, int max_y)
 int main(int argc, char *argv[])
 {
 	char **result = NULL;
-	int max_x = get_line_nbr(argv[1]);
-	int max_y = get_colon_nbr(argv[1], get_nbr_size(max_x));
-	(void)argc;
+	int max_x = 0;
+	int max_y = 0;
 
+	if (argc < 2)
+		return (84);
+	max_x = get_line_nbr(argv[1]);
+	max_y = get_colon_nbr(argv[1], get_nbr_size(max_x));
 	result = create_map(result, argv[1], max_x, max_y);
 	bsq(result, max_y, max_x);
 	free(result);
