@@ -33,7 +33,7 @@ square_pos find_square(char **map, int y, int x, int max_y)
 	int tab[8] = {0, 0, 0, 0, 1, y, x , max_y};
 	square_pos taille = {-2, -1, -1};
 
-        for (;tab[4]; tab[0] = 0, tab[1] = 0) {
+	for (;tab[4]; tab[0] = 0, tab[1] = 0) {
 		if (map[tab[5]][tab[6] + 1] == '.') {
 	        	tab[2] = tab[2] + 1;
 			tab[3] += 1;
@@ -41,14 +41,14 @@ square_pos find_square(char **map, int y, int x, int max_y)
 			tab[4] = 0;
 			tab[3] += 1;
 		}
-	        while (tab[2] > tab[0])
+		while (tab[2] > tab[0])
 			find_x(map, tab);
 		if (taille.size < tab[3]) {
 			taille.size = tab[3];
 			taille.x = tab[6];
 			taille.y = tab[5];
 		}
-        }
+	}
 	return (taille);
 }
 
@@ -71,7 +71,7 @@ void bsq(char **map, int max_x, int max_y)
 {
 	int tab[3] = {0, max_x, max_y};
 	square_pos final = {-2, -1, -1};
-	
+
 	for (int i = 0; i < tab[2]; i = i + 1) {
 		for (;tab[0] < tab[1] && final.size != tab[2] \
 			     && final.size && tab[1]; tab[0] += 1) {
