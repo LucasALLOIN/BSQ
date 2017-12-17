@@ -10,7 +10,7 @@ SRC	=	source/main.c \
 
 OBJ	=	$(SRC:.c=.o)
 
-CFLAGS	=	-Werror -Wextra -W -Wall -Wparentheses -Wsign-compare -Wpointer-sign -Wuninitialized -Wunused-but-set-variable -I ./include/ -L lib/my -lmy -O3
+CFLAGS	=	-Werror -Wextra -W -Wall -Wparentheses -Wsign-compare -Wpointer-sign -Wuninitialized -Wunused-but-set-variable -I ./include/ -L lib/my -lmy
 
 NAME	=	bsq
 
